@@ -1,24 +1,26 @@
 import pytest
-from flask import g
+from flask import Flask, g
 from flask import session
 
 from flaskr.db import get_db
-
+from tests.conftest import AuthActions
+from werkzeug.security import check_password_hash
 
 def test_register(client, app):
     # test that viewing the page renders without template errors
     assert client.get("/auth/register").status_code == 200
 
     # test that successful registration redirects to the login page
-    response = client.post("/auth/register", data={"username": "a", "password": "a"})
-    assert response.headers["Location"] == "/auth/login"
+    response = client.post("/auth/register", data={"username": "a", "password": "b"})
+    assert "/auth/login" in response.headers["Location"] 
 
     # test that the user was inserted into the database
     with app.app_context():
-        assert (
-            get_db().execute("SELECT * FROM user WHERE username = 'a'").fetchone()
-            is not None
-        )
+         
+         usuario = get_db().execute("SELECT * FROM user WHERE username = 'a'").fetchone()
+         assert(usuario is not None)
+         assert(check_password_hash(usuario["password"],"b"))
+
 
 
 @pytest.mark.parametrize(
@@ -29,14 +31,14 @@ def test_register(client, app):
         ("test", "test", b"already registered"),
     ),
 )
-def test_register_validate_input(client, username, password, message):
+def test_register_validate_input(client: Any, username, password, message):
     response = client.post(
         "/auth/register", data={"username": username, "password": password}
     )
     assert message in response.data
 
 
-def test_login(client, auth):
+def test_login(client: Any, auth: AuthActions):
     # test that viewing the page renders without template errors
     assert client.get("/auth/login").status_code == 200
 
@@ -56,12 +58,12 @@ def test_login(client, auth):
     ("username", "password", "message"),
     (("a", "test", b"Incorrect username."), ("test", "a", b"Incorrect password.")),
 )
-def test_login_validate_input(auth, username, password, message):
+def test_login_validate_input(auth: AuthActions, username, password, message):
     response = auth.login(username, password)
     assert message in response.data
 
 
-def test_logout(client, auth):
+def test_logout(client: Any, auth: AuthActions):
     auth.login()
 
     with client:
