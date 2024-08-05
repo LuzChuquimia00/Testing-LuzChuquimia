@@ -24,21 +24,21 @@ def test_register(client, app):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "message"),
+    ("nombreDeUsuario", "Contraseña", "Mensaje"),
     (
-        ("", "", b"Username is required."),
-        ("a", "", b"Password is required."),
-        ("test", "test", b"already registered"),
+        ("", "", "nombreDeUsuario es requerido."),
+        ("a", "", "Contraseña es requerida."),
+        ("test", "test", "ya esta registrado"),
     ),
 )
-def test_register_validate_input(client: Any, username, password, message):
+def test_register_validate_input(client, username, password, message):
     response = client.post(
         "/auth/register", data={"username": username, "password": password}
     )
-    assert message in response.data
+    assert message in response.data.decode()
 
 
-def test_login(client: Any, auth: AuthActions):
+def test_login(client, auth: AuthActions):
     # test that viewing the page renders without template errors
     assert client.get("/auth/login").status_code == 200
 
@@ -55,15 +55,16 @@ def test_login(client: Any, auth: AuthActions):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "message"),
-    (("a", "test", b"Incorrect username."), ("test", "a", b"Incorrect password.")),
+    ("nombreDeUsuario", "Contraseña", "Mensaje"),
+    (("a", "test", "nombreDeUsuario Incorrecto."), 
+     ("test", "a", "Contraseña Incorrecta.")),
 )
 def test_login_validate_input(auth: AuthActions, username, password, message):
     response = auth.login(username, password)
-    assert message in response.data
+    assert message in response.data.decode()
 
 
-def test_logout(client: Any, auth: AuthActions):
+def test_logout(client, auth: AuthActions):
     auth.login()
 
     with client:
