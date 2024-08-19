@@ -97,9 +97,9 @@ def login():
         ).fetchone()
 
         if user is None:
-            error = "El nombre de usuario es incorrecto."
+            error = "Usuario o contraseña incorrectos"
         elif not check_password_hash(user["password"], password):
-            error = "La contraseña es incorrecta."
+            error = "Usuario o contraseña incorrectos"
         
         if error is None:
             # store the user id in a new session and return to the index
