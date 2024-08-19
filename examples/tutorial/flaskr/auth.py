@@ -53,6 +53,7 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        verificacion = request.form["verificacion"]
         db = get_db()
         error = None
 
@@ -60,7 +61,10 @@ def register():
             error = "El nombre de usuario es obligatorio."
         elif not password:
             error = "La contraseña es obligatoria."
-
+        elif not verificacion:
+             error = "La verificacion es obligatoria."
+        elif verificacion != password: 
+            error = "La verificacion es incorrecta."
         if error is None:
             try:
                 
@@ -100,7 +104,6 @@ def login():
             error = "Usuario o contraseña incorrectos"
         elif not check_password_hash(user["password"], password):
             error = "Usuario o contraseña incorrectos"
-        
         if error is None:
             # store the user id in a new session and return to the index
             session.clear()
