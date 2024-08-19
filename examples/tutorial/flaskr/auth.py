@@ -57,9 +57,9 @@ def register():
         error = None
 
         if not username:
-            error = "Username is required."
+            error = "El nombre de usuario es obligatorio."
         elif not password:
-            error = "Password is required."
+            error = "La contraseña es obligatoria."
 
         if error is None:
             try:
@@ -84,7 +84,7 @@ def register():
     return render_template("auth/register.html")
 
 
-@bp.route("/login", methods=("GET", "POST"))
+@bp.route("/login", methods=("GET", "POST")) 
 def login():
     """Log in a registered user by adding the user id to the session."""
     if request.method == "POST":
@@ -97,10 +97,10 @@ def login():
         ).fetchone()
 
         if user is None:
-            error = "Incorrect username."
+            error = "El nombre de usuario es incorrecto."
         elif not check_password_hash(user["password"], password):
-            error = "Incorrect password."
-
+            error = "La contraseña es incorrecta."
+        
         if error is None:
             # store the user id in a new session and return to the index
             session.clear()

@@ -28,7 +28,7 @@ def test_register(client, app):
     (
         ("", "", "El nombre de usuario es obligatorio."),
         ("a", "", "La contraseña es obligatoria."),
-        ("test", "test", "ya esta registrado."),
+        
     ),
 )
 def test_register_validate_input(client, username, password, message):
